@@ -9,3 +9,6 @@
 * Informar ao usuário se ele pontuou
 * Permitir repetir o jogo, gerando outro grafo
 * Informar a quantidade de pontos marcados
+
+
+_Código base: [https://gist.github.com/anirudhjayaraman/272e920079fd8cea97f81487ef1e78a3#file-graphundirected-py](https://gist.github.com/anirudhjayaraman/272e920079fd8cea97f81487ef1e78a3#file-graphundirected-py)_
