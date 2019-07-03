@@ -1,3 +1,8 @@
+import os
+import random
+from networkx import draw, Graph
+from matplotlib import pyplot as plt
+
 class Vertex:
     def __init__(self, vertex):
         self.name = vertex
@@ -15,21 +20,16 @@ class Vertex:
         
     def add_neighbors(self, neighbors):
         for neighbor in neighbors:
-            if isinstance(neighbor, Vertex):
-                if neighbor.name not in self.neighbors:
-                    self.neighbors.append(neighbor.name)
-                    neighbor.neighbors.append(self.name)
-                    self.neighbors = sorted(self.neighbors)
-                    neighbor.neighbors = sorted(neighbor.neighbors)
-            else:
-                return False
+            self.add_neighbor(neighbor)
         
     def __repr__(self):
         return str(self.neighbors)
 
-class Graph:
+class MyGraph:
     def __init__(self):
         self.vertices = {}
+        self.vertices_number = 0
+        self.generate_graph()
     
     def add_vertex(self, vertex):
         if isinstance(vertex, Vertex):
@@ -50,50 +50,64 @@ class Graph:
                 
     def add_edges(self, edges):
         for edge in edges:
-            self.add_edge(edge[0],edge[1])          
+            self.add_edge(edge[0],edge[1])
+
+    def generate_edges(self, vertice, vertices):
+        edges_number = random.randint(0, int(self.vertices_number/3))
+        edges = []
+
+        for _ in range(edges_number):
+            index = random.randint(0, self.vertices_number - 1)
+            if(vertices.index(vertice) == index):
+                pass
+            else:
+                edge = [vertice, vertices[index]]
+                edges.append(edge)        
+
+        self.add_edges(edges)
+
+    def generate_graph(self):
+        self.vertices_number = random.randint(10, 20)
+        print("quantidade de nos: " + str(self.vertices_number))
+        vertices = [Vertex(str(vertice)) for vertice in range(self.vertices_number)]
+
+        self.add_vertices(vertices)
+
+        for vertice in vertices:
+            self.generate_edges(vertice, vertices)
+
+    def edges_tuples(self):
+        keys = list(self.vertices.keys())
+        keys_visited = []
+        edges = []
+
+        for key in keys:
+            keys_visited.append(key)
+            for neighbor in self.vertices[key]:
+                if neighbor not in keys_visited:
+                    edges.append((key, neighbor))
+
+        return edges
     
     def adjacencyList(self):
         if len(self.vertices) >= 1:
                 return [str(key) + ":" + str(self.vertices[key]) for key in self.vertices.keys()]  
         else:
             return dict()
-        
-    def adjacencyMatrix(self):
-        if len(self.vertices) >= 1:
-            self.vertex_names = sorted(g.vertices.keys())
-            self.vertex_indices = dict(zip(self.vertex_names, range(len(self.vertex_names)))) 
-            import numpy as np
-            self.adjacency_matrix = np.zeros(shape=(len(self.vertices),len(self.vertices)))
-            for i in range(len(self.vertex_names)):
-                for j in range(i, len(self.vertices)):
-                    for el in g.vertices[self.vertex_names[i]]:
-                        j = g.vertex_indices[el]
-                        self.adjacency_matrix[i,j] = 1
-            return self.adjacency_matrix
-        else:
-            return dict()              
+             
                         
 def graph(g):
-    """ Function to print a graph as adjacency list and adjacency matrix. """
-    return str(g.adjacencyList()) + '\n' + '\n' + str(g.adjacencyMatrix())
+    """ Function to print a graph as adjacency list. """
+    return str(g.adjacencyList()) + '\n'
 
-###################################################################################
+def plot_graph(g):
+    s = Graph()
+    s.add_edges_from(g.edges_tuples())
+    draw(s, with_labels=True)
+    plt.savefig('grafo.png')
 
-a = Vertex('A')
-b = Vertex('B')
-c = Vertex('C')
-d = Vertex('D')
-e = Vertex('E')
 
-a.add_neighbors([b,c,e]) 
-b.add_neighbors([a,c])
-c.add_neighbors([b,d,a,e])
-d.add_neighbor(c)
-e.add_neighbors([a,c])
-        
-g = Graph()
-print graph(g)
-print 
-g.add_vertices([a,b,c,d,e])
-g.add_edge(b,d)
-print graph(g)
+if __name__ == '__main__':        
+    g = MyGraph()
+    plot_graph(g)
+
