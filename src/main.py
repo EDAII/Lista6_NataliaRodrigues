@@ -1,4 +1,5 @@
 import os
+import sys
 import random
 from networkx import draw, Graph
 from matplotlib import pyplot as plt
@@ -106,8 +107,51 @@ def plot_graph(g):
     draw(s, with_labels=True)
     plt.savefig('grafo.png')
 
+def nodes_to_path(g):
+    pass
 
-if __name__ == '__main__':        
-    g = MyGraph()
-    plot_graph(g)
+def smaller_path(g, node_from, node_to):
+    pass
+
+if __name__ == '__main__':
+
+    points = 0
+
+    print(  
+            """
+            \nOlá! Seja bem-vindo(a) ao jogo dos caminhos.\n
+            \nVocê deve tentar acertar qual o menor caminho de um nó a outro do grafo pela maior quantidade de vezes consecutivas.\n
+            """
+        )
+
+    os.system("read -p '\nPressione Enter para começar o jogo.' var")
+
+    while True:      
+        g = MyGraph()
+        plot_graph(g)
+        
+        os.system("clear")
+
+        node_from, node_to = nodes_to_path(g)
+
+        print("Abra a figura 'grafo.png' gerada e indique o menor caminho do nó " + node_from.name + " ao nó " node_to.name + ".\n")
+        print(
+                """
+                Ex: Sejam X e Y os nós de origem e destino. A, B e C nós que fazem a ligação entre X e Y.\n 
+                Se você acreditar o menor caminho para se chegar de X até Y é passando por A, B e C, o caminho que deve ser indicado é: X-A-B-C-Y\n"
+                """
+            )
+        
+        path = input("\nIndique o caminho(" + node_from.name + ", " + node_to.name + ": ")
+
+        if(path == smaller_path(g, node_from, node_to)):
+            points += 1
+            print("\nAcertou! Você tem " + str(points) + " pontos.\n")
+        else:
+            print("\nQue pena, você errou!\n")
+
+        option = input("\n\nContinuar? (S/N): ")
+        
+        if(option == 'N')
+            sys.exit()
 
