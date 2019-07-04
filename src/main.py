@@ -68,7 +68,7 @@ class MyGraph:
         self.add_edges(edges)
 
     def generate_graph(self):
-        self.vertices_number = random.randint(10, 20)
+        self.vertices_number = random.randint(5, 15)
         print("quantidade de nos: " + str(self.vertices_number))
         vertices = [Vertex(str(vertice)) for vertice in range(self.vertices_number)]
 
@@ -84,9 +84,13 @@ class MyGraph:
 
         for key in keys:
             keys_visited.append(key)
-            for neighbor in self.vertices[key]:
-                if neighbor not in keys_visited:
-                    edges.append((key, neighbor))
+            neighbors = self.vertices[key]
+            if neighbors:
+                for neighbor in neighbors:
+                    if neighbor not in keys_visited:
+                        edges.append((key, neighbor))
+            else:
+                edges.append((key, key))
 
         return edges
     
@@ -105,17 +109,62 @@ def plot_graph(g):
     s = Graph()
     s.add_edges_from(g.edges_tuples())
     draw(s, with_labels=True)
-    plt.savefig('grafo.png')
+    plt.savefig("grafo.png")
+
+    s = None
 
 def nodes_to_path(g):
-    pass
+    node_from = random.randint(0, g.vertices_number - 1)
+    node_to = node_from
 
-def smaller_path(g, node_from, node_to):
-    pass
+    while node_to == node_from or node_to in g.vertices[str(node_from)]:
+        node_to = random.randint(0, g.vertices_number - 1)
+
+    return (str(node_from), str(node_to))
+
+def bfs_paths(g, node_from, node_to):
+    paths = []
+    queue = [(node_from, [node_from])]
+    while queue:
+        vertex, path = queue.pop(0)
+        for next in (set(g.vertices[vertex]) - set(path)):
+            if next == node_to:
+                paths.append(path + [next])
+            else:
+                queue.append((next, path + [next]))
+
+    return paths
+
+def shortest_path(g, node_from, node_to):
+    paths = bfs_paths(g, node_from, node_to)
+
+    if not paths:
+        return "no"
+
+    paths.sort(key=len)
+    shortest_len = len(paths[0])
+    shortest_paths = []
+
+    for path in paths:
+        if(len(path) == shortest_len):
+            shortest_paths.append(path)
+
+    shortest_paths_str = []
+
+    for path in shortest_paths:
+        shortest_path = ""
+        for element in path:
+            if path.index(element) == 0:
+                shortest_path = element
+            else:
+                shortest_path += '-' + element
+
+        shortest_paths_str.append(shortest_path)
+
+    return shortest_paths_str
+
 
 if __name__ == '__main__':
-
-    points = 0
 
     print(  
             """
@@ -126,32 +175,26 @@ if __name__ == '__main__':
 
     os.system("read -p '\nPressione Enter para começar o jogo.' var")
 
-    while True:      
-        g = MyGraph()
-        plot_graph(g)
-        
-        os.system("clear")
+    g = MyGraph()
+    plot_graph(g)
 
-        node_from, node_to = nodes_to_path(g)
+    os.system("clear")
 
-        print("Abra a figura 'grafo.png' gerada e indique o menor caminho do nó " + node_from.name + " ao nó " node_to.name + ".\n")
-        print(
-                """
-                Ex: Sejam X e Y os nós de origem e destino. A, B e C nós que fazem a ligação entre X e Y.\n 
-                Se você acreditar o menor caminho para se chegar de X até Y é passando por A, B e C, o caminho que deve ser indicado é: X-A-B-C-Y\n"
-                """
-            )
-        
-        path = input("\nIndique o caminho(" + node_from.name + ", " + node_to.name + ": ")
+    node_from, node_to = nodes_to_path(g)
 
-        if(path == smaller_path(g, node_from, node_to)):
-            points += 1
-            print("\nAcertou! Você tem " + str(points) + " pontos.\n")
-        else:
-            print("\nQue pena, você errou!\n")
+    print("\nAbra a figura 'grafo.png' gerada e indique o menor caminho do nó " + node_from + " ao nó " + node_to + ".")
+    print("\nEx: Sejam X e Y os nós de origem e destino. A, B e C nós que fazem a ligação entre X e Y. Se você acreditar o menor caminho para se chegar de X até Y é passando por A, B e C, o caminho que deve ser indicado é: X-A-B-C-Y")
+    print("\nSe não existir nenhum caminho entre X e Y, o que deve ser indicado é: no\n")
+    
+    path = input("\nIndique o caminho (" + node_from + ", " + node_to + "): ")
 
-        option = input("\n\nContinuar? (S/N): ")
-        
-        if(option == 'N')
-            sys.exit()
+    sp = shortest_path(g, node_from, node_to)
+
+    if(path in sp):
+        print("\nAcertou!\n")
+    else:
+        print("\nQue pena, você errou!")
+        print("\nO(s) menor(es) caminho(s) é(são): " + str(sp) + ".\n")
+
+
 
